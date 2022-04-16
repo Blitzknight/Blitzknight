@@ -1,0 +1,65 @@
+{
+    "folders": [
+        {
+            "path": "../app/Client/Appearance"
+        }
+    ],
+    "settings": {
+        "typescript.preferences.importModuleSpecifier": "relative",
+        "workbench.colorCustomizations": {
+            "activityBar.activeBackground": "#fa1b49",
+            "activityBar.activeBorder": "#155e02",
+            "activityBar.background": "#fa1b49",
+            "activityBar.foreground": "#e7e7e7",
+            "activityBar.inactiveForeground": "#e7e7e799",
+            "activityBarBadge.background": "#155e02",
+            "activityBarBadge.foreground": "#e7e7e7",
+            "statusBar.background": "#dd0531",
+            "statusBar.foreground": "#e7e7e7",
+            "statusBarItem.hoverBackground": "#fa1b49",
+            "titleBar.activeBackground": "#dd0531",
+            "titleBar.activeForeground": "#e7e7e7",
+            "titleBar.inactiveBackground": "#dd053199",
+            "titleBar.inactiveForeground": "#e7e7e799",
+            "sash.hoverBorder": "#fa1b49",
+            "statusBarItem.remoteBackground": "#dd0531",
+            "statusBarItem.remoteForeground": "#e7e7e7"
+        },
+        "peacock.remoteColor": "#dd0531",
+        "editor.bracketPairColorization.enabled": true,
+    },
+    "extensions": {
+        "recommendations": [
+            // Common
+            "ms-ceintl.vscode-language-pack-ja",
+            "johnpapa.vscode-peacock",
+            // C#
+            "ms-dotnettools.csharp",
+            "k--kato.docomment",
+            // TypeScript(Angular)
+            "humao.rest-client",
+            "angular.ng-template",
+            "ms-edgedevtools.vscode-edge-devtools",
+            "msjsdiag.debugger-for-chrome",
+            "dbaeumer.vscode-eslint",
+            // XML
+            "dotjoshjohnson.xml",
+            // Editor
+            "editorconfig.editorconfig",
+            "oderwat.indent-rainbow",
+            "ibm.output-colorizer",
+            "humao.rest-client",
+            "wayou.vscode-todo-highlight",
+            // Misc
+            "fabiospampinato.vscode-todo-plus",
+            "shd101wyy.markdown-preview-enhanced",
+            "alefragnani.bookmarks",
+            "hediet.vscode-drawio",
+            // GIT TOOL
+            "GitHub.vscode-pull-request-github",
+            "donjayamanne.githistory",
+            "eamodio.gitlens",
+            "mhutchie.git-graph"
+        ]
+    }
+}

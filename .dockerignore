@@ -1,0 +1,22 @@
+# git
+.git
+
+# Lib
+Hyperion.Pf.Entity/obj
+Hyperion.Pf.Entity/bin
+Hyperion.Pf.Workflow/Hyperion.Pf.Workflow/bin
+Hyperion.Pf.Workflow/Hyperion.Pf.Workflow/obj
+Hyperion.Pf.Workflow/Hyperion.Pf.Workflow.Tests
+Hyperion.Pf.Workflow/Hyperion.Pf.Workflow.Tests
+Hyperion.Pf.Workflow/Hyperion.Pf.Workflow.Tools
+Hyperion.Pf.Workflow/Hyperion.Pf.Workflow.Tools
+
+# C# build
+**/bin
+**/obj
+
+# node_modules
+**/node_modules
+
+# Docker
+Dockerfile_*
