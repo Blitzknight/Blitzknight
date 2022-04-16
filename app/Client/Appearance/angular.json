@@ -72,10 +72,10 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "browserTarget": "app:build:production"
+              "browserTarget": "Appearance:build:production"
             },
             "development": {
-              "browserTarget": "app:build:development"
+              "browserTarget": "Appearance:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -83,7 +83,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "app:build"
+            "browserTarget": "Appearance:build"
           }
         },
         "test": {
@@ -103,9 +103,21 @@
             ],
             "scripts": []
           }
+        },
+        "lint": {
+          "builder": "@angular-eslint/builder:lint",
+          "options": {
+            "lintFilePatterns": [
+              "src/**/*.ts",
+              "src/**/*.html"
+            ]
+          }
         }
       }
     }
   },
-  "defaultProject": "Appearance"
+  "defaultProject": "Appearance",
+  "cli": {
+    "defaultCollection": "@angular-eslint/schematics"
+  }
 }

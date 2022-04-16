@@ -1,12 +1,12 @@
 {
-  "eslint.options": {
-    "extensions": [".ts", ".html"]
-  },
   "eslint.workingDirectories": [
     {
       "mode": "auto"
     }
   ],
+  "eslint.options": {
+    "extensions": [".ts", ".html"]
+  },
   "eslint.validate": [
     "javascript",
     "javascriptreact",
@@ -14,14 +14,14 @@
     "typescriptreact",
     "html"
   ],
-  "[html]": {
+  "[typescript]": {
     "editor.defaultFormatter": "dbaeumer.vscode-eslint",
     "editor.codeActionsOnSave": {
       "source.fixAll.eslint": true
     },
     "editor.formatOnSave": false
   },
-  "[typescript]": {
+  "[html]": {
     "editor.defaultFormatter": "dbaeumer.vscode-eslint",
     "editor.codeActionsOnSave": {
       "source.fixAll.eslint": true
