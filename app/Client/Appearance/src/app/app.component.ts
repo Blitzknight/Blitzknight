@@ -1,6 +1,8 @@
 import { Component, ElementRef, AfterViewInit, ViewChild } from '@angular/core';
 import * as PIXI from 'pixi.js';
 import * as planck from 'planck';
+import { ApplicationContext } from './blitzknight/application-context';
+import { LoggerUtils } from './misc/logger-utils';
 
 @Component({
   selector: 'app-root',
@@ -9,6 +11,8 @@ import * as planck from 'planck';
 })
 export class AppComponent implements AfterViewInit {
   title = 'app';
+
+  static readonly LOG = LoggerUtils.getLogger('AppService');
 
   @ViewChild('pixiContainer') pixiContainer?: ElementRef;
 
@@ -49,20 +53,25 @@ export class AppComponent implements AfterViewInit {
   drawLines = true; // Draw Debug lines : デバッグライン表示
   bulletMode = true; // Flag new objects as bullets (prevents tunneling, but is harsh on performance) : 新しいオブジェクトに箇条書きのフラグを立てます（トンネリングを防ぎますが、パフォーマンスに厳しいです）
 
+  constructor(protected context: ApplicationContext) {}
+
   /** @override */
   ngAfterViewInit() {
     console.debug('[ngAfterViewInit]' + this.pixiContainer);
+    AppComponent.LOG.debug('[ngAfterViewInit] aaa');
     if (this.pixiContainer) {
       console.debug('[ngAfterViewInit] PIXI初期化');
 
       PIXI.utils.sayHello('type');
 
-      this.app = new PIXI.Application({
-        // this creates our pixi application
-        width: 1280,
-        height: 720,
-        backgroundColor: 0x1099bb,
-      });
+      this.app = this.context.getApplication();
+      this.stage = this.app.stage;
+      // this.app = new PIXI.Application({
+      //   // this creates our pixi application
+      //   width: 1280,
+      //   height: 720,
+      //   backgroundColor: 0x1099bb,
+      // });
 
       // PlankJSのサンプルではPureRendererを使用していたが、PIXI.Application内のレンダラでも可能。
       this.renderer = this.app?.renderer;
@@ -224,6 +233,29 @@ export class AppComponent implements AfterViewInit {
     this.deltaTime = this.timestep / 1000;
   }
 
+  onClickShowSprite() {
+    AppComponent.LOG.debug('[onClickShowSprite] in');
+    this.app?.loader.add('gripe_run_right', 'assets/image/sprite/gripe_run_right.png');
+    this.app?.loader.load(() => {
+      const baseTexture = this.app?.loader.resources['gripe_run_right'].texture?.baseTexture;
+      if (baseTexture) {
+        let position = 2;
+        const textture = new PIXI.Texture(baseTexture, new PIXI.Rectangle(64 * (position - 1), 0, 64, 64));
+        const sprite = new PIXI.Sprite(textture);
+        sprite.x = 140;
+        sprite.y = 180;
+        this.stage.addChild(sprite);
+
+        position = 3;
+        const textture2 = new PIXI.Texture(baseTexture, new PIXI.Rectangle(64 * (position - 1), 0, 64, 64));
+        const sprite2 = new PIXI.Sprite(textture2);
+        sprite2.x = 240;
+        sprite2.y = 180;
+        this.stage.addChild(sprite2);
+      }
+    });
+  }
+
   private randrange(min: number, max: number) {
     return Math.floor(Math.random() * (Math.floor(max) - Math.ceil(min) + 1)) + Math.ceil(min);
   }
@@ -353,7 +385,13 @@ export class AppComponent implements AfterViewInit {
         const bulletMode = false;
         const worldAny = this.world as any;
         this.infoText.text =
-          'Steps: ' + worldAny.m_stepCount + ' (' + this.physicsSteps + '/sec @ ' + this.frameTime.toFixed(2) + 'ms)';
+          'Steps: ' +
+          worldAny.getProxyCount() +
+          ' (' +
+          this.physicsSteps +
+          '/sec @ ' +
+          this.frameTime.toFixed(2) +
+          'ms)';
         this.infoText.text += '\n#: ' + this.gameObjects.length;
         this.topText.text =
           'SPACE: bunnies!    ENTER: random geometry    DEL: remove object    NumPad +/-: gravity (' +
@@ -470,8 +508,8 @@ class PhysicsState {
 }
 
 class GameObject {
-  sprite: PIXI.Graphics;
-  debug: PIXI.Graphics;
+  spriteDraw: PIXI.Graphics;
+  debugDraw: PIXI.Graphics;
   container: PIXI.Container;
   world: planck.World;
   body: planck.Body;
@@ -489,8 +527,8 @@ class GameObject {
 
   constructor(spriteLayer: PIXI.Container, debugLayer: PIXI.Container, opts: GameObjectParameter) {
     this.world = opts.world;
-    this.sprite = new PIXI.Graphics();
-    this.debug = new PIXI.Graphics();
+    this.spriteDraw = new PIXI.Graphics();
+    this.debugDraw = new PIXI.Graphics();
     this.container = new PIXI.Container();
     this.pixelsPerMeter = opts.pixelsPerMeter;
     this.metersPerPixel = opts.metersPerPixel;
@@ -517,14 +555,14 @@ class GameObject {
         }
       );
 
-      if (this.sprite instanceof PIXI.Sprite == false) {
-        this.sprite.beginFill(opts.color, 1);
-        this.sprite.drawRect(0, 0, opts.radius, opts.radius);
-        this.sprite.endFill();
+      if (this.spriteDraw instanceof PIXI.Sprite == false) {
+        this.spriteDraw.beginFill(opts.color, 1);
+        this.spriteDraw.drawRect(0, 0, opts.radius, opts.radius);
+        this.spriteDraw.endFill();
         // Boxes need their origin centralized, because box2d uses center of mass (this keeps our "sprite" within our body.
         // Circles do this naturally
-        this.sprite.pivot.x = this.sprite.width / 2;
-        this.sprite.pivot.y = this.sprite.height / 2;
+        this.spriteDraw.pivot.x = this.spriteDraw.width / 2;
+        this.spriteDraw.pivot.y = this.spriteDraw.height / 2;
       }
     }
 
@@ -533,8 +571,8 @@ class GameObject {
     this.previousState.assign(this.body.getPosition(), this.body.getAngle());
 
     // If a texture is present, we need to center our origin
-    if (this.sprite instanceof PIXI.Sprite) {
-      const spriteon = this.sprite as PIXI.Sprite;
+    if (this.spriteDraw instanceof PIXI.Sprite) {
+      const spriteon = this.spriteDraw as PIXI.Sprite;
       spriteon.pivot.x = spriteon.width / 2;
       spriteon.pivot.y = spriteon.height / 2;
       spriteon.scale.set(
@@ -548,7 +586,7 @@ class GameObject {
     this.container.pivot.y = this.container.height / 2;
     this.container.x = opts.position.x * opts.pixelsPerMeter;
     this.container.y = opts.position.y * opts.pixelsPerMeter;
-    this.container.addChild(this.sprite); // Add the sprite after you setup the container, lest it gets goofy.
+    this.container.addChild(this.spriteDraw); // Add the sprite after you setup the container, lest it gets goofy.
     spriteLayer.addChild(this.container);
 
     //this.container.interactive = true;
@@ -556,9 +594,9 @@ class GameObject {
     //this.container.on('pointerdown', this.click.bind(this));
 
     // Debug lines
-    this.debug.x = this.container.x = opts.position.x;
-    this.debug.y = this.container.y = opts.position.y;
-    debugLayer.addChild(this.debug);
+    this.debugDraw.x = this.container.x = opts.position.x;
+    this.debugDraw.y = this.container.y = opts.position.y;
+    debugLayer.addChild(this.debugDraw);
   }
 
   integrate(
@@ -592,15 +630,15 @@ class GameObject {
     else this.dirty = false;
 
     // Debug lines -- Yeah, these are not very fast, but useful for a testbed.
-    this.debug.clear();
+    this.debugDraw.clear();
 
     if (drawLines) {
-      this.debug.x = this.container.x;
-      this.debug.y = this.container.y;
-      this.debug.rotation = interpolation
+      this.debugDraw.x = this.container.x;
+      this.debugDraw.y = this.container.y;
+      this.debugDraw.rotation = interpolation
         ? this.body.getAngle() * alpha + this.previousState.angle * (1 - alpha)
         : this.body.getAngle();
-      this.debug.lineStyle(1, 0x00ff2a, 1);
+      this.debugDraw.lineStyle(1, 0x00ff2a, 1);
 
       if (this.body) {
         if (this.shapeType != 'circle') {
@@ -609,20 +647,29 @@ class GameObject {
             var shape = fixture.getShape() as any; // we do make an assumption that there's just one fixture; keep this in mind if you add more.
             const a1 = shape as planck.Shape;
             // console.log('vertex:' + shape.getVertex(0).x);
-            this.debug.moveTo(shape.getVertex(0).x * this.pixelsPerMeter, shape.getVertex(0).y * this.pixelsPerMeter);
+            this.debugDraw.moveTo(
+              shape.getVertex(0).x * this.pixelsPerMeter,
+              shape.getVertex(0).y * this.pixelsPerMeter
+            );
             for (var v = 1; v < shape.m_count; v++) {
-              this.debug.lineTo(shape.getVertex(v).x * this.pixelsPerMeter, shape.getVertex(v).y * this.pixelsPerMeter);
+              this.debugDraw.lineTo(
+                shape.getVertex(v).x * this.pixelsPerMeter,
+                shape.getVertex(v).y * this.pixelsPerMeter
+              );
             }
-            this.debug.lineTo(shape.getVertex(0).x * this.pixelsPerMeter, shape.getVertex(0).y * this.pixelsPerMeter);
+            this.debugDraw.lineTo(
+              shape.getVertex(0).x * this.pixelsPerMeter,
+              shape.getVertex(0).y * this.pixelsPerMeter
+            );
           }
         } else if (this.shapeType == 'circle') {
           var r = this.body.getFixtureList()?.getShape().m_radius;
           if (r) {
-            this.debug.drawCircle(0, 0, r * this.pixelsPerMeter);
+            this.debugDraw.drawCircle(0, 0, r * this.pixelsPerMeter);
           }
         }
       }
-      this.debug.endFill();
+      this.debugDraw.endFill();
     }
   }
 
@@ -642,7 +689,7 @@ class GameObject {
     this.world.destroyBody(this.body);
     // pixi cleanup
     this.container.destroy({ children: true });
-    this.debug.destroy();
+    this.debugDraw.destroy();
   }
 }
 

@@ -19,10 +19,16 @@
     "@angular/platform-browser": "~13.3.0",
     "@angular/platform-browser-dynamic": "~13.3.0",
     "@angular/router": "~13.3.0",
+    "@microsoft/signalr": "^6.0.4",
+    "angular-split": "^13.2.0",
+    "ng-zorro-antd": "^13.1.1",
+    "ngx-blitzknight": "file:../../../../ngx-blitzknight-0.0.1.tgz",
     "pixi.js": "^6.3.0",
     "planck": "^1.0.0-alpha.4",
     "rxjs": "~7.5.0",
     "tslib": "^2.3.0",
+    "typescript-logging": "^2.0.1",
+    "typescript-logging-log4ts-style": "^2.0.1",
     "zone.js": "~0.11.4"
   },
   "devDependencies": {
