@@ -22,7 +22,7 @@
     "@microsoft/signalr": "^6.0.4",
     "angular-split": "^13.2.0",
     "ng-zorro-antd": "^13.1.1",
-    "ngx-blitzknight": "file:../../../../ngx-blitzknight-0.0.1.tgz",
+    "ngx-blitzknight": "file:lib/ngx-entity-datasource-1.0.0.tgz",
     "pixi.js": "^6.3.0",
     "planck": "^1.0.0-alpha.4",
     "rxjs": "~7.5.0",
